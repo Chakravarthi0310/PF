@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio",
-  description: "My Professional Portfolio",
+  title: "Chakravarthi Padyala | Portfolio",
+  description: "Full-stack developer crafting beautiful, performant web experiences using React, Next.js, Spring Boot, Node.js, and Cloud technologies.",
 };
 
 export default function RootLayout({
