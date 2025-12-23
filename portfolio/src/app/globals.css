@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-black text-zinc-100 antialiased;
+}
+
+/* Light mode styles */
+.light body {
+  @apply bg-white text-zinc-900;
+}
+
+.light nav {
+  @apply bg-white/50 border-zinc-200;
+}
