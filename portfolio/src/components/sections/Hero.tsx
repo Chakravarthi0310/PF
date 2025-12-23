@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowRight, Code, Cpu, Database, Server, Smartphone } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 // Types for Framer Motion variants
 type AnimationVariant = {
@@ -39,6 +40,10 @@ export function Hero() {
         'Problem Solver'
     ];
 
+    const { theme } = useTheme();
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const animationFrameRef = useRef<number>();
+
     // Auto-rotate roles
     useEffect(() => {
         const interval = setInterval(() => {
@@ -46,6 +51,116 @@ export function Hero() {
         }, 3000);
         return () => clearInterval(interval);
     }, []);
+
+    // Animated background effect
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let time = 0;
+        const particles: Particle[] = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 60;
+
+        // Particle class
+        class Particle {
+            x: number;
+            y: number;
+            size: number;
+            speedX: number;
+            speedY: number;
+            color: string;
+
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                if (!ctx) return;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Create particles
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        // Handle window resize
+        const handleResize = () => {
+            if (!canvas) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+
+        // Animation loop
+        const animate = () => {
+            if (!ctx || !canvas) return;
+            
+            // Clear canvas with a semi-transparent background for trail effect
+            ctx.fillStyle = theme === 'dark' ? 'rgba(10, 10, 15, 0.1)' : 'rgba(250, 250, 255, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw particles
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // Draw lines between nearby particles
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = theme === 'dark' 
+                            ? `rgba(255, 255, 255, ${1 - distance/150})` 
+                            : `rgba(0, 0, 0, ${0.5 - distance/300})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            time += 0.005;
+            animationFrameRef.current = requestAnimationFrame(animate);
+        };
+
+        // Initialize
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        animate();
+
+        // Cleanup
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+        };
+    }, [theme]);
 
     // Framer Motion variants with proper typing
     const container: Variants = {
@@ -103,12 +218,23 @@ export function Hero() {
                     exit="exit"
                     variants={fadeInUp as Variants}
                 >
-                    {/* Animated background elements */}
-                    <div className="absolute inset-0 overflow-hidden">
-                        <div className="absolute -top-40 -left-40 w-80 h-80 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-                        <div className="absolute top-1/2 -right-20 w-96 h-96 bg-amber-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-                        <div className="absolute -bottom-20 left-1/4 w-80 h-80 bg-blue-500/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-                    </div>
+                    {/* Animated canvas background */}
+                    <canvas 
+                        ref={canvasRef} 
+                        className="fixed inset-0 w-full h-full -z-10"
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            zIndex: -10,
+                            pointerEvents: 'none'
+                        }}
+                    />
+                    
+                    {/* Subtle gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/10 dark:to-white/5" />
 
                     {/* Toggle button */}
                     <button 
