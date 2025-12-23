@@ -134,7 +134,6 @@ export function Hero() {
                 style={{ opacity }}
             >
                 <div>
-
                     <motion.div variants={itemVariants} className="relative">
                         <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter text-zinc-900 dark:text-white mb-6">
                             CODE <br />
@@ -207,7 +206,7 @@ export function Hero() {
                             ))}
                         </div>
                     </motion.div>
-                </div >
+                </div>
 
                 <div className="relative hidden lg:block">
                     {/* Visual Feature: Floating Tech Sphere */}
@@ -265,10 +264,10 @@ export function Hero() {
                         </motion.div>
                     </div>
                 </div>
-            </motion.div >
+            </motion.div>
 
             {/* Scroll Indicator */}
-            < motion.div
+            <motion.div
                 className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -281,7 +280,7 @@ export function Hero() {
                         className="w-1.5 h-1.5 bg-amber-500 rounded-full"
                     />
                 </div>
-            </motion.div >
-        </section >
+            </motion.div>
+        </section>
     );
 }

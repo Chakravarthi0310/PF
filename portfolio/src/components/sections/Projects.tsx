@@ -8,14 +8,14 @@ const projects = [
     {
         title: 'PaySync – Expense Tracker',
         tech: ['Java Spring Boot', 'Flutter', 'Firebase'],
-        description: 'Built microservice-based backend with real-time collaboration, event-based expense categorization, multi-currency support, and analytics dashboards.',
+        description: 'Microservice-based platform with Firebase sync, event-based expense categorization, multi-currency support, and real-time collaboration for shared budget tracking.',
         color: 'from-blue-500 to-indigo-600',
         icon: <Layers className="w-6 h-6" />
     },
     {
         title: 'FarmCart – E-Commerce Platform',
         tech: ['React', 'Node.js', 'MySQL'],
-        description: 'Developed full-stack e-commerce platform, admin approval system, real-time order notifications, analytics dashboards, and CI/CD integration.',
+        description: 'Full-stack platform enabling farmers with role-based access, admin approval systems, real-time notifications, and dynamic analytics for sales optimization.',
         color: 'from-emerald-500 to-teal-600',
         icon: <Sparkles className="w-6 h-6" />
     }

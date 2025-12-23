@@ -54,11 +54,11 @@ export function About() {
                             {/* Floating Stats or Badges */}
                             <div className="absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-4">
                                 <div className="p-4 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-2xl border border-white/20 dark:border-white/10 shadow-xl">
-                                    <div className="text-2xl font-black text-amber-500">3+</div>
-                                    <div className="text-xs font-bold uppercase tracking-wider text-zinc-500">Years Experience</div>
+                                    <div className="text-2xl font-black text-amber-500">6+</div>
+                                    <div className="text-xs font-bold uppercase tracking-wider text-zinc-500">Months Intern</div>
                                 </div>
                                 <div className="p-4 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-2xl border border-white/20 dark:border-white/10 shadow-xl">
-                                    <div className="text-2xl font-black text-purple-500">20+</div>
+                                    <div className="text-2xl font-black text-purple-500">5</div>
                                     <div className="text-xs font-bold uppercase tracking-wider text-zinc-500">Projects Done</div>
                                 </div>
                             </div>
@@ -84,22 +84,23 @@ export function About() {
 
                         <motion.div variants={itemVariants} className="space-y-6 text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
                             <p>
-                                I&apos;m a passionate developer with a keen eye for design and a love for clean code.
-                                I build scalable applications that solve real-world problems.
+                                I&apos;m a Computer Science student at **SRM University AP** specializing in AI & ML,
+                                with a passion for building high-performance applications.
                             </p>
                             <p>
-                                When I&apos;m not coding, you can find me exploring new technologies, contributing to open source,
-                                or enjoying a good cup of coffee.
+                                Currently, I&apos;m an **SDE Intern at Bajaj Finserv Health**, where I optimize rule engines
+                                and build performance tracking systems. Previously, I worked as a **Flutter Developer Intern**
+                                at Back & Forth Solutions.
                             </p>
                         </motion.div>
 
                         {/* Quick Facts Grid */}
                         <motion.div variants={itemVariants} className="grid sm:grid-cols-2 gap-4 pt-4">
                             {[
-                                { icon: <GraduationCap size={18} />, text: "Lifelong Learner" },
-                                { icon: <Globe size={18} />, text: "Remote Professional" },
+                                { icon: <GraduationCap size={18} />, text: "SRM University AP (8.65 CGPA)" },
+                                { icon: <Globe size={18} />, text: "Full Stack & Mobile Dev" },
                                 { icon: <Code2 size={18} />, text: "Clean Code Advocate" },
-                                { icon: <Coffee size={18} />, text: "Tech Enthusiast" }
+                                { icon: <Coffee size={18} />, text: "Agile & System Design" }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center space-x-3 p-4 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/5 group hover:border-amber-500/50 transition-colors duration-300">
                                     <div className="text-zinc-400 group-hover:text-amber-500 transition-colors capitalize">

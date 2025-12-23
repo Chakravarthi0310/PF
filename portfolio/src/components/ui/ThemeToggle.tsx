@@ -11,7 +11,7 @@ export function ThemeToggle() {
     const { theme, setTheme } = useTheme();
 
     useEffect(() => {
-        setMounted(true);
+        setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
     }, []);
 
     const handleClick = () => {
@@ -43,19 +43,19 @@ export function ThemeToggle() {
             {/* Animated background highlight on hover */}
             <div className={`absolute inset-0 bg-gradient-to-r from-amber-400/10 to-purple-500/10 
                 opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-            
+
             {/* Sun and Moon Icons with animations */}
             <div className="relative z-10 flex items-center justify-center">
-                <Sun 
+                <Sun
                     className={`absolute w-6 h-6 text-amber-400 transition-all duration-500 ease-in-out 
-                    ${theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-45 scale-75'}`} 
+                    ${theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-45 scale-75'}`}
                 />
-                <Moon 
+                <Moon
                     className={`absolute w-6 h-6 text-purple-400 transition-all duration-500 ease-in-out 
-                    ${theme === 'light' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-45 scale-75'}`} 
+                    ${theme === 'light' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-45 scale-75'}`}
                 />
             </div>
-            
+
             {/* Pulsing effect on theme change */}
             {isClicked && (
                 <div className="absolute inset-0 bg-white/10 dark:bg-black/10 animate-ping rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000" />
