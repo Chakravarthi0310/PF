@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, Variants } from 'framer-motion';
-import { ArrowRight, Code, Cpu, Database, Server, Smartphone, ExternalLink, Github, Linkedin, Mail } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { ArrowRight, Code, Cpu, Database, Server, Github, Linkedin, Mail } from 'lucide-react';
 
 export function Hero() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -18,12 +17,9 @@ export function Hero() {
         'Problem Solver'
     ];
 
-    const { theme } = useTheme();
     const { scrollY } = useScroll();
 
     // Parallax effects
-    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-    const y2 = useTransform(scrollY, [0, 500], [0, -150]);
     const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
     useEffect(() => {
@@ -47,7 +43,7 @@ export function Hero() {
             setCurrentRole((prev) => (prev + 1) % roles.length);
         }, 3000);
         return () => clearInterval(interval);
-    }, []);
+    }, [roles.length]);
 
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -120,7 +116,7 @@ export function Hero() {
                 <motion.div
                     className="absolute inset-0 z-10"
                     style={{
-                        background: `radial - gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 255, 255, 0.03), transparent 40 %)`
+                        background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 255, 255, 0.03), transparent 40%)`
                     }}
                 />
 
@@ -138,18 +134,6 @@ export function Hero() {
                 style={{ opacity }}
             >
                 <div>
-                    <motion.div variants={itemVariants} className="flex items-center space-x-4 mb-8">
-                        <div className="flex -space-x-2">
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold overflow-hidden">
-                                    <img src={`https://i.pravatar.cc/100?u=${i + 10}`} alt="avatar" />
-                                </div >
-                            ))}
-                        </div >
-                        <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                            Trusted by <span className="text-zinc-900 dark:text-zinc-100 font-bold">50+</span> clients worldwide
-                        </span>
-                    </motion.div >
 
                     <motion.div variants={itemVariants} className="relative">
                         <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter text-zinc-900 dark:text-white mb-6">
@@ -170,7 +154,7 @@ export function Hero() {
 
                     <motion.div variants={itemVariants} className="mt-8 flex items-center space-x-6">
                         <div className="text-2xl md:text-3xl font-medium text-zinc-600 dark:text-zinc-400">
-                            I'm a{' '}
+                            I&apos;m a{' '}
                             <span className="relative inline-block min-w-[300px]">
                                 <AnimatePresence mode="wait">
                                     <motion.span
@@ -192,7 +176,7 @@ export function Hero() {
                         className="mt-12 text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-lg leading-relaxed"
                     >
                         Turning complex problems into elegant, high-performance digital solutions.
-                        Let's build something extraordinary together.
+                        Let&apos;s build something extraordinary together.
                     </motion.p>
 
                     <motion.div
