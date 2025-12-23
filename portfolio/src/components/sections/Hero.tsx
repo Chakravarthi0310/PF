@@ -60,6 +60,10 @@ export function Hero() {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
+        // Set initial canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
         let time = 0;
         const particles: Particle[] = [];
         const particleCount = window.innerWidth < 768 ? 30 : 60;
@@ -74,8 +78,8 @@ export function Hero() {
             color: string;
 
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
+                this.x = Math.random() * window.innerWidth;
+                this.y = Math.random() * window.innerHeight;
                 this.size = Math.random() * 3 + 1;
                 this.speedX = Math.random() * 1 - 0.5;
                 this.speedY = Math.random() * 1 - 0.5;
@@ -87,8 +91,8 @@ export function Hero() {
                 this.y += this.speedY;
 
                 // Bounce off edges
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                if (this.x < 0 || this.x > window.innerWidth) this.speedX *= -1;
+                if (this.y < 0 || this.y > window.innerHeight) this.speedY *= -1;
             }
 
             draw() {
@@ -108,10 +112,27 @@ export function Hero() {
         // Handle window resize
         const handleResize = () => {
             if (!canvas) return;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            // Set canvas size
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Recalculate particle positions to fit new dimensions
+            particles.forEach(particle => {
+                particle.x = Math.min(particle.x, width);
+                particle.y = Math.min(particle.y, height);
+            });
         };
 
+        // Initialize
+        handleResize();
+        const resizeObserver = new ResizeObserver(handleResize);
+        if (canvas.parentElement) {
+            resizeObserver.observe(canvas.parentElement);
+        }
+        
         // Animation loop
         const animate = () => {
             if (!ctx || !canvas) return;
@@ -155,10 +176,11 @@ export function Hero() {
 
         // Cleanup
         return () => {
-            window.removeEventListener('resize', handleResize);
+            resizeObserver.disconnect();
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
+            window.removeEventListener('resize', handleResize);
         };
     }, [theme]);
 
