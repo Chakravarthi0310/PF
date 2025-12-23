@@ -49,16 +49,16 @@ export function Navbar() {
     ];
 
     return (
-        <motion.nav 
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-black/80 backdrop-blur-md border-b border-white/10' : 'bg-transparent'}`}
+        <motion.nav
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-zinc-200 dark:border-white/10' : 'bg-transparent'}`}
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
-                    <Link 
-                        href="/" 
+                    <Link
+                        href="/"
                         className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-purple-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
                     >
                         Portfolio
@@ -67,8 +67,8 @@ export function Navbar() {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-1">
                         {navLinks.map((link) => (
-                            <NavLink 
-                                key={link.href} 
+                            <NavLink
+                                key={link.href}
                                 href={link.href}
                                 onClick={(e) => handleSmoothScroll(e, link.href)}
                                 isActive={pathname === link.href}
@@ -76,7 +76,7 @@ export function Navbar() {
                                 {link.label}
                             </NavLink>
                         ))}
-                        <div className="w-px h-6 bg-white/20 mx-2"></div>
+                        <div className="w-px h-6 bg-zinc-300 dark:bg-white/20 mx-2"></div>
                         <ThemeToggle />
                     </div>
 
@@ -85,7 +85,7 @@ export function Navbar() {
                         <ThemeToggle />
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
+                            className="p-2 rounded-lg text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
                             aria-label={isOpen ? 'Close menu' : 'Open menu'}
                         >
                             {isOpen ? (
@@ -106,12 +106,12 @@ export function Navbar() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        className="md:hidden overflow-hidden bg-black/95 backdrop-blur-lg border-t border-white/10"
+                        className="md:hidden overflow-hidden bg-white/95 dark:bg-black/95 backdrop-blur-lg border-t border-zinc-200 dark:border-white/10"
                     >
                         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                             {navLinks.map((link) => (
-                                <MobileNavLink 
-                                    key={link.href} 
+                                <MobileNavLink
+                                    key={link.href}
                                     href={link.href}
                                     onClick={(e) => {
                                         handleSmoothScroll(e, link.href);
@@ -130,14 +130,14 @@ export function Navbar() {
     );
 }
 
-function NavLink({ 
-    href, 
-    children, 
+function NavLink({
+    href,
+    children,
     isActive,
-    onClick 
-}: { 
-    href: string; 
-    children: React.ReactNode; 
+    onClick
+}: {
+    href: string;
+    children: React.ReactNode;
     isActive?: boolean;
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>, href: string) => void;
 }) {
@@ -145,31 +145,29 @@ function NavLink({
         <Link
             href={href}
             onClick={(e) => onClick?.(e, href)}
-            className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 group ${
-                isActive 
-                    ? 'text-white' 
-                    : 'text-zinc-300 hover:text-white hover:bg-white/5'
-            }`}
+            className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 group ${isActive
+                    ? 'text-zinc-900 dark:text-white'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5'
+                }`}
         >
             {children}
-            <span 
-                className={`absolute bottom-1 left-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-purple-500 transition-all duration-300 group-hover:w-4/5 ${
-                    isActive ? 'w-4/5' : ''
-                }`}
+            <span
+                className={`absolute bottom-1 left-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-500 to-purple-600 dark:from-amber-400 dark:to-purple-500 transition-all duration-300 group-hover:w-4/5 ${isActive ? 'w-4/5' : ''
+                    }`}
                 style={{ transform: 'translateX(-50%)' }}
             ></span>
         </Link>
     );
 }
 
-function MobileNavLink({ 
-    href, 
-    children, 
+function MobileNavLink({
+    href,
+    children,
     onClick,
-    isActive 
-}: { 
-    href: string; 
-    children: React.ReactNode; 
+    isActive
+}: {
+    href: string;
+    children: React.ReactNode;
     onClick: (e: React.MouseEvent<HTMLAnchorElement>, href: string) => void;
     isActive?: boolean;
 }) {
@@ -177,11 +175,10 @@ function MobileNavLink({
         <Link
             href={href}
             onClick={(e) => onClick(e, href)}
-            className={`flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
-                isActive 
-                    ? 'text-white bg-white/10' 
-                    : 'text-zinc-300 hover:bg-white/5 hover:text-white'
-            }`}
+            className={`flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${isActive
+                    ? 'text-zinc-900 dark:text-white bg-zinc-200 dark:bg-white/10'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white'
+                }`}
         >
             <ArrowUpRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
             {children}

@@ -1,48 +1,45 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ArrowRight, Code, Cpu, Database, Server, Smartphone } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform, Variants } from 'framer-motion';
+import { ArrowRight, Code, Cpu, Database, Server, Smartphone, ExternalLink, Github, Linkedin, Mail } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
-// Types for Framer Motion variants
-type AnimationVariant = {
-    hidden: {
-        opacity: number;
-        y?: number;
-    };
-    visible: {
-        opacity: number;
-        y?: number;
-        transition: {
-            duration: number;
-            ease?: number[] | string;
-            type?: string;
-            stiffness?: number;
-            damping?: number;
-        };
-    };
-    exit?: {
-        opacity: number;
-        y?: number;
-    };
-};
-
 export function Hero() {
-    const [isVisible, setIsVisible] = useState(true);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [currentRole, setCurrentRole] = useState(0);
-    
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const roles = [
         'Full-Stack Developer',
-        'System Architect',
-        'UI/UX Enthusiast',
-        'Cloud Specialist',
+        'Frontend Expert',
+        'Backend Architect',
+        'Cloud Solutions',
         'Problem Solver'
     ];
 
     const { theme } = useTheme();
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const animationFrameRef = useRef<number>();
+    const { scrollY } = useScroll();
+
+    // Parallax effects
+    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+    const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+    const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (containerRef.current) {
+                const { left, top } = containerRef.current.getBoundingClientRect();
+                setMousePosition({
+                    x: e.clientX - left,
+                    y: e.clientY - top
+                });
+            }
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
 
     // Auto-rotate roles
     useEffect(() => {
@@ -52,344 +49,255 @@ export function Hero() {
         return () => clearInterval(interval);
     }, []);
 
-    // Animated background effect
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // Set initial canvas size
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        let time = 0;
-        const particles: Particle[] = [];
-        const particleCount = window.innerWidth < 768 ? 30 : 60;
-
-        // Particle class
-        class Particle {
-            x: number;
-            y: number;
-            size: number;
-            speedX: number;
-            speedY: number;
-            color: string;
-
-            constructor() {
-                this.x = Math.random() * window.innerWidth;
-                this.y = Math.random() * window.innerHeight;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-                this.color = theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                // Bounce off edges
-                if (this.x < 0 || this.x > window.innerWidth) this.speedX *= -1;
-                if (this.y < 0 || this.y > window.innerHeight) this.speedY *= -1;
-            }
-
-            draw() {
-                if (!ctx) return;
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        // Create particles
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        // Handle window resize
-        const handleResize = () => {
-            if (!canvas) return;
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            
-            // Set canvas size
-            canvas.width = width;
-            canvas.height = height;
-            
-            // Recalculate particle positions to fit new dimensions
-            particles.forEach(particle => {
-                particle.x = Math.min(particle.x, width);
-                particle.y = Math.min(particle.y, height);
-            });
-        };
-
-        // Initialize
-        handleResize();
-        const resizeObserver = new ResizeObserver(handleResize);
-        if (canvas.parentElement) {
-            resizeObserver.observe(canvas.parentElement);
-        }
-        
-        // Animation loop
-        const animate = () => {
-            if (!ctx || !canvas) return;
-            
-            // Clear canvas with a semi-transparent background for trail effect
-            ctx.fillStyle = theme === 'dark' ? 'rgba(10, 10, 15, 0.1)' : 'rgba(250, 250, 255, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Update and draw particles
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-                
-                // Draw lines between nearby particles
-                for (let j = i; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < 150) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = theme === 'dark' 
-                            ? `rgba(255, 255, 255, ${1 - distance/150})` 
-                            : `rgba(0, 0, 0, ${0.5 - distance/300})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            time += 0.005;
-            animationFrameRef.current = requestAnimationFrame(animate);
-        };
-
-        // Initialize
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        animate();
-
-        // Cleanup
-        return () => {
-            resizeObserver.disconnect();
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [theme]);
-
-    // Framer Motion variants with proper typing
-    const container: Variants = {
+    const containerVariants: Variants = {
         hidden: { opacity: 0 },
-        show: {
+        visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.1,
+                staggerChildren: 0.2,
                 delayChildren: 0.3,
             },
         },
     };
 
-    const item: Variants = {
-        hidden: { opacity: 0, y: 20 },
-        show: { 
-            opacity: 1, 
+    const itemVariants: Variants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: {
+            opacity: 1,
             y: 0,
             transition: {
                 type: 'spring',
                 stiffness: 100,
-                damping: 10
+                damping: 20
             }
         },
-    };
-
-    const fadeInUp: AnimationVariant = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { 
-            opacity: 1, 
-            y: 0,
-            transition: {
-                duration: 0.6,
-                ease: [0.16, 1, 0.3, 1]
-            }
-        },
-        exit: { opacity: 0, y: -20 }
     };
 
     const techIcons = [
-        { icon: <Code className="w-6 h-6" />, name: 'React' },
-        { icon: <Server className="w-6 h-6" />, name: 'Node.js' },
-        { icon: <Cpu className="w-6 h-6" />, name: 'Next.js' },
-        { icon: <Database className="w-6 h-6" />, name: 'MongoDB' },
-        { icon: <Smartphone className="w-6 h-6" />, name: 'React Native' },
+        { icon: <Code />, name: 'React', color: 'from-blue-400 to-cyan-500' },
+        { icon: <Server />, name: 'Node.js', color: 'from-green-400 to-emerald-600' },
+        { icon: <Cpu />, name: 'Next.js', color: 'from-zinc-400 to-zinc-600' },
+        { icon: <Database />, name: 'MongoDB', color: 'from-emerald-400 to-green-500' },
     ];
 
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.section 
-                    className="relative min-h-screen flex items-center pt-20 overflow-hidden"
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    variants={fadeInUp as Variants}
-                >
-                    {/* Animated canvas background */}
-                    <canvas 
-                        ref={canvasRef} 
-                        className="fixed inset-0 w-full h-full -z-10"
-                        style={{
-                            position: 'fixed',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            zIndex: -10,
-                            pointerEvents: 'none'
-                        }}
-                    />
-                    
-                    {/* Subtle gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/10 dark:to-white/5" />
+        <section
+            ref={containerRef}
+            className="relative min-h-screen flex items-center justify-center overflow-hidden py-20"
+        >
+            {/* Background Creative Elements */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                {/* Animated Glowing Blobs */}
+                <motion.div
+                    animate={{
+                        x: [0, 100, 0],
+                        y: [0, 50, 0],
+                        scale: [1, 1.2, 1],
+                    }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/20 blur-[120px] dark:bg-purple-600/10"
+                />
+                <motion.div
+                    animate={{
+                        x: [0, -80, 0],
+                        y: [0, 100, 0],
+                        scale: [1, 1.1, 1],
+                    }}
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                    className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/20 blur-[120px] dark:bg-blue-600/10"
+                />
+                <motion.div
+                    animate={{
+                        x: [0, 50, 0],
+                        y: [0, -50, 0],
+                        scale: [1, 1.3, 1],
+                    }}
+                    transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-[20%] right-[10%] w-[40%] h-[40%] rounded-full bg-amber-500/10 blur-[100px] dark:bg-amber-600/5"
+                />
 
-                    {/* Toggle button */}
-                    <button 
-                        onClick={() => setIsVisible(!isVisible)}
-                        className="fixed top-6 right-6 z-50 p-2 bg-black/50 backdrop-blur-md rounded-full border border-white/10 hover:bg-white/10 transition-all duration-300 group"
-                        aria-label={isVisible ? 'Hide hero section' : 'Show hero section'}
-                    >
-                        <div className={`w-6 h-6 relative transition-transform duration-300 ${isVisible ? 'rotate-180' : ''}`}>
-                            <div className={`absolute w-4 h-0.5 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${isVisible ? 'rotate-45' : 'rotate-0'}`}></div>
-                            <div className={`absolute w-4 h-0.5 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${isVisible ? '-rotate-45' : 'rotate-0'}`}></div>
-                        </div>
-                    </button>
+                {/* Mouse Spotlight */}
+                <motion.div
+                    className="absolute inset-0 z-10"
+                    style={{
+                        background: `radial - gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 255, 255, 0.03), transparent 40 %)`
+                    }}
+                />
 
-                    <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
-                        <motion.div 
-                            className="max-w-4xl"
-                            variants={container}
-                            initial="hidden"
-                            animate="show"
+                {/* Grid Pattern */}
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+                    style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+                />
+            </div>
+
+            <motion.div
+                className="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-16 items-center"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                style={{ opacity }}
+            >
+                <div>
+                    <motion.div variants={itemVariants} className="flex items-center space-x-4 mb-8">
+                        <div className="flex -space-x-2">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold overflow-hidden">
+                                    <img src={`https://i.pravatar.cc/100?u=${i + 10}`} alt="avatar" />
+                                </div >
+                            ))}
+                        </div >
+                        <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                            Trusted by <span className="text-zinc-900 dark:text-zinc-100 font-bold">50+</span> clients worldwide
+                        </span>
+                    </motion.div >
+
+                    <motion.div variants={itemVariants} className="relative">
+                        <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter text-zinc-900 dark:text-white mb-6">
+                            CODE <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-purple-500 to-blue-500">BEYOND</span> <br />
+                            LIMITS
+                        </h1>
+                        <motion.div
+                            className="absolute -top-10 -right-10 w-32 h-32 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center rotate-12 hidden md:flex"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                         >
-                            <motion.div variants={item} className="flex items-center mb-4">
-                                <span className="px-3 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-300 border border-purple-500/30">
-                                    Available for work
-                                </span>
-                                <span className="ml-3 w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                            </motion.div>
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-center px-4">
+                                Creative • Innovative • Scalable •
+                            </span>
+                        </motion.div>
+                    </motion.div>
 
-                            <motion.h1 
-                                variants={item as Variants}
-                                className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent"
-                            >
-                                <span className="block">Hello, I'm</span>
-                                <span className="block bg-gradient-to-r from-amber-400 via-purple-500 to-blue-500 bg-clip-text text-transparent">
-                                    Chakravarthi
-                                </span>
-                            </motion.h1>
+                    <motion.div variants={itemVariants} className="mt-8 flex items-center space-x-6">
+                        <div className="text-2xl md:text-3xl font-medium text-zinc-600 dark:text-zinc-400">
+                            I'm a{' '}
+                            <span className="relative inline-block min-w-[300px]">
+                                <AnimatePresence mode="wait">
+                                    <motion.span
+                                        key={currentRole}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        className="absolute left-0 text-zinc-900 dark:text-zinc-100 font-bold"
+                                    >
+                                        {roles[currentRole]}
+                                    </motion.span>
+                                </AnimatePresence>
+                            </span>
+                        </div>
+                    </motion.div>
 
-                            <motion.div 
-                                variants={item as Variants}
-                                className="mt-6 h-12 flex items-center"
-                            >
-                                <div className="text-2xl md:text-3xl font-medium text-zinc-300">
-                                    {roles.map((role, index) => (
-                                        <span 
-                                            key={role}
-                                            className={`absolute transition-opacity duration-500 ${index === currentRole ? 'opacity-100' : 'opacity-0'}`}
-                                        >
-                                            {role}
-                                        </span>
-                                    ))}
-                                </div>
-                                <div className="ml-4 w-1 h-10 bg-gradient-to-b from-amber-400 to-purple-500 rounded-full animate-pulse"></div>
-                            </motion.div>
+                    <motion.p
+                        variants={itemVariants}
+                        className="mt-12 text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-lg leading-relaxed"
+                    >
+                        Turning complex problems into elegant, high-performance digital solutions.
+                        Let's build something extraordinary together.
+                    </motion.p>
 
-                            <motion.p 
-                                variants={item as Variants}
-                                className="mt-6 text-lg md:text-xl text-zinc-400 max-w-2xl leading-relaxed"
-                            >
-                                I craft exceptional digital experiences with a focus on performance, accessibility, and beautiful design. 
-                                Currently building scalable web applications with modern technologies as a passionate Full-Stack Developer.
-                            </motion.p>
-
-                            <motion.div 
-                                variants={item as Variants}
-                                className="mt-10 flex flex-wrap gap-4"
-                            >
-                                <a
-                                    href="#projects"
-                                    className="group relative px-8 py-4 bg-gradient-to-r from-amber-400 to-purple-500 text-black font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/30"
+                    <motion.div
+                        variants={itemVariants}
+                        className="mt-12 flex flex-wrap gap-6"
+                    >
+                        <a
+                            href="#projects"
+                            className="group px-8 py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-full flex items-center transition-all hover:scale-105 active:scale-95 shadow-xl shadow-zinc-900/10 dark:shadow-white/10"
+                        >
+                            Explore Projects
+                            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                        <div className="flex items-center space-x-4">
+                            {[
+                                { icon: <Github className="w-5 h-5" />, href: "https://github.com/Chakravarthi0310" },
+                                { icon: <Linkedin className="w-5 h-5" />, href: "https://www.linkedin.com/in/padyala-chakravarthi-939a97258/" },
+                                { icon: <Mail className="w-5 h-5" />, href: "mailto:chakripadyala95@gmail.com" },
+                            ].map((social, i) => (
+                                <motion.a
+                                    key={i}
+                                    href={social.href}
+                                    whileHover={{ y: -3, scale: 1.1 }}
+                                    className="p-3 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
                                 >
-                                    <span className="relative z-10 flex items-center">
-                                        View My Work
-                                        <ArrowRight className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
-                                    </span>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                </a>
-                                <a
-                                    href="#contact"
-                                    className="px-8 py-4 border-2 border-zinc-700 text-white font-medium rounded-xl hover:border-amber-400 hover:text-amber-400 transition-all duration-300 hover:bg-white/5"
-                                >
-                                    Let's Talk
-                                </a>
-                            </motion.div>
+                                    {social.icon}
+                                </motion.a>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div >
 
-                            <motion.div 
-                                variants={item as Variants}
-                                className="mt-16"
-                            >
-                                <p className="text-sm text-zinc-500 mb-4">TECH STACK</p>
-                                <div className="flex flex-wrap gap-6">
-                                    {techIcons.map((tech, index) => (
-                                        <motion.div
-                                            key={tech.name}
-                                            className="flex flex-col items-center group"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ 
-                                                opacity: 1, 
-                                                y: 0,
-                                                transition: {
-                                                    delay: 0.5 + (index * 0.1),
-                                                    duration: 0.5
-                                                }
-                                            }}
-                                            whileHover={{ y: -5 }}
-                                        >
-                                            <div className="w-14 h-14 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center group-hover:bg-amber-500/10 group-hover:border-amber-500/30 transition-all duration-300">
-                                                {tech.icon}
-                                            </div>
-                                            <span className="mt-2 text-xs text-zinc-400 group-hover:text-amber-400 transition-colors">
-                                                {tech.name}
-                                            </span>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </motion.div>
+                <div className="relative hidden lg:block">
+                    {/* Visual Feature: Floating Tech Sphere */}
+                    <div className="relative w-full aspect-square flex items-center justify-center">
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-purple-500/10 to-blue-500/10 rounded-full blur-3xl"
+                            animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                            transition={{ duration: 10, repeat: Infinity }}
+                        />
+
+                        <div className="relative z-10 grid grid-cols-2 gap-8">
+                            {techIcons.map((tech, i) => (
+                                <motion.div
+                                    key={tech.name}
+                                    className="relative group p-8 rounded-3xl bg-white/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-white/50 dark:border-white/5 shadow-2xl"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        y: [0, (i % 2 === 0 ? -15 : 15), 0]
+                                    }}
+                                    transition={{
+                                        opacity: { delay: 0.5 + (i * 0.1) },
+                                        scale: { delay: 0.5 + (i * 0.1) },
+                                        y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }
+                                    }}
+                                    whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 5 : -5 }}
+                                >
+                                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tech.color} flex items-center justify-center text-white mb-4 shadow-lg`}>
+                                        {tech.icon}
+                                    </div>
+                                    <h3 className="font-bold text-zinc-900 dark:text-white">{tech.name}</h3>
+                                    <p className="text-xs text-zinc-500 mt-1">Advanced Mastery</p>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* Floating Decorative Elements */}
+                        <motion.div
+                            animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                            className="absolute top-10 right-10 p-4 bg-white dark:bg-zinc-800 rounded-2xl shadow-xl flex items-center space-x-3"
+                        >
+                            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                            <span className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Live Optimization</span>
+                        </motion.div>
+
+                        <motion.div
+                            animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
+                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                            className="absolute bottom-10 left-0 p-4 bg-zinc-900 text-white rounded-2xl shadow-xl flex items-center space-x-3"
+                        >
+                            <Cpu className="w-4 h-4 text-purple-400" />
+                            <span className="text-xs font-bold uppercase tracking-wider">Fast Execution</span>
                         </motion.div>
                     </div>
+                </div>
+            </motion.div >
 
-                    {/* Scroll indicator */}
-                    <motion.div 
-                        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ 
-                            opacity: 1, 
-                            y: 0,
-                            transition: { delay: 1.5 }
-                        }}
-                    >
-                        <span className="text-xs text-zinc-500 mb-2">SCROLL DOWN</span>
-                        <div className="w-px h-10 bg-gradient-to-b from-amber-400 to-transparent"></div>
-                    </motion.div>
-                </motion.section>
-            )}
-        </AnimatePresence>
+            {/* Scroll Indicator */}
+            < motion.div
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2 }}
+            >
+                <div className="w-[30px] h-[50px] rounded-full border-2 border-zinc-200 dark:border-zinc-800 flex justify-center p-2">
+                    <motion.div
+                        animate={{ y: [0, 15, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="w-1.5 h-1.5 bg-amber-500 rounded-full"
+                    />
+                </div>
+            </motion.div >
+        </section >
     );
 }
