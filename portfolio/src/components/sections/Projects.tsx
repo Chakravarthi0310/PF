@@ -1,8 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { motion, Variants } from "framer-motion";
 import { ExternalLink, Github, ArrowRight, Code2, Layers, Sparkles } from "lucide-react";
-import { useRef } from "react";
+import Image from "next/image";
 
 const projects = [
     {
@@ -10,14 +11,19 @@ const projects = [
         tech: ['Java Spring Boot', 'Flutter', 'Firebase'],
         description: 'Microservice-based platform with Firebase sync, event-based expense categorization, multi-currency support, and real-time collaboration for shared budget tracking.',
         color: 'from-blue-500 to-indigo-600',
-        icon: <Layers className="w-6 h-6" />
+        icon: <Layers className="w-6 h-6" />,
+        image: '/projects/pasync1.jpg',
+        github: 'https://github.com/your-github/paysync'
     },
     {
         title: 'FarmCart – E-Commerce Platform',
         tech: ['React', 'Node.js', 'MySQL'],
         description: 'Full-stack platform enabling farmers with role-based access, admin approval systems, real-time notifications, and dynamic analytics for sales optimization.',
         color: 'from-emerald-500 to-teal-600',
-        icon: <Sparkles className="w-6 h-6" />
+        icon: <Sparkles className="w-6 h-6" />,
+        image: '/projects/farmcart.png',
+        link: 'https://fc-marketplace-one.vercel.app/products',
+        github: 'https://github.com/your-github/farmcart'
     }
 ];
 
@@ -129,33 +135,49 @@ export function Projects() {
                                         </div>
 
                                         <div className="pt-4 flex items-center space-x-6">
-                                            <a href="#" className="flex items-center space-x-2 text-zinc-900 dark:text-white font-bold group/link">
-                                                <span>Case Study</span>
-                                                <ArrowRight size={18} className="group-hover/link:translate-x-2 transition-transform" />
-                                            </a>
+                                            {project.link ? (
+                                                <a href={project.link} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-zinc-900 dark:text-white font-bold group/link">
+                                                    <span>Live Demo</span>
+                                                    <ArrowRight size={18} className="group-hover/link:translate-x-2 transition-transform" />
+                                                </a>
+                                            ) : (
+                                                <span className="text-zinc-400 font-bold italic">Contact for Demo</span>
+                                            )}
                                             <div className="flex items-center space-x-4">
-                                                <Github className="w-5 h-5 text-zinc-400 hover:text-zinc-900 dark:hover:text-white cursor-pointer transition-colors" />
-                                                <ExternalLink className="w-5 h-5 text-zinc-400 hover:text-zinc-900 dark:hover:text-white cursor-pointer transition-colors" />
+                                                <a href={project.github} target="_blank" rel="noopener noreferrer">
+                                                    <Github className="w-5 h-5 text-zinc-400 hover:text-zinc-900 dark:hover:text-white cursor-pointer transition-colors" />
+                                                </a>
+                                                {project.link && (
+                                                    <a href={project.link} target="_blank" rel="noopener noreferrer">
+                                                        <ExternalLink className="w-5 h-5 text-zinc-400 hover:text-zinc-900 dark:hover:text-white cursor-pointer transition-colors" />
+                                                    </a>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Project Visual Placeholder */}
-                                <div className={`lg:col-span-7 h-[400px] md:h-[500px] rounded-3xl overflow-hidden relative group/image ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}>
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-20`} />
-                                    <div className="absolute inset-4 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 flex flex-col items-center justify-center space-y-4">
-                                        <div className="w-16 h-16 rounded-2xl bg-white dark:bg-zinc-900 flex items-center justify-center shadow-2xl group-hover/image:scale-110 transition-transform duration-500">
-                                            <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${project.color}`} />
-                                        </div>
-                                        <span className="text-zinc-400 dark:text-zinc-500 font-medium uppercase tracking-widest text-xs">Visual Representation</span>
-                                    </div>
+                                {/* Project Visual */}
+                                <div className={`lg:col-span-7 h-[400px] md:h-[500px] rounded-3xl overflow-hidden relative group/image ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'} shadow-2xl`}>
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-20 z-10`} />
+
+                                    <Image
+                                        src={project.image}
+                                        alt={project.title}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover/image:scale-110"
+                                    />
 
                                     {/* Hover Overlay */}
-                                    <div className="absolute inset-0 bg-zinc-900/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500 flex items-center justify-center backdrop-blur-sm">
-                                        <button className="px-8 py-3 bg-white text-zinc-900 font-bold rounded-full transform translate-y-4 group-hover/image:translate-y-0 transition-transform duration-500">
-                                            View Project Details
-                                        </button>
+                                    <div className="absolute inset-0 bg-zinc-900/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500 flex items-center justify-center backdrop-blur-sm z-20">
+                                        <a
+                                            href={project.link || project.github}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-8 py-3 bg-white text-zinc-900 font-bold rounded-full transform translate-y-4 group-hover/image:translate-y-0 transition-transform duration-500"
+                                        >
+                                            Explore Project
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -163,6 +185,7 @@ export function Projects() {
                     ))}
                 </motion.div>
             </div>
+
 
             {/* Divider */}
             <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
