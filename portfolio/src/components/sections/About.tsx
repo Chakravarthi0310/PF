@@ -2,6 +2,7 @@
 
 import { motion, Variants } from "framer-motion";
 import { User, GraduationCap, Coffee, Globe, Target, ShieldCheck } from "lucide-react";
+import { AbstractAvatar } from "@/components/ui/AbstractAvatar";
 
 export function About() {
     const containerVariants: Variants = {
@@ -47,8 +48,8 @@ export function About() {
                     <motion.div variants={itemVariants} className="relative">
                         <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-zinc-200 dark:border-white/10 group">
                             <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-purple-500/20" />
-                            <div className="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900">
-                                <User size={120} className="text-zinc-300 dark:text-zinc-800" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 transition-colors duration-500">
+                                <AbstractAvatar />
                             </div>
 
                             {/* Floating Stats or Badges */}
